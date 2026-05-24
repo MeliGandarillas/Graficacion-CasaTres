@@ -60,7 +60,7 @@ public class EstructuraCasa {
                 float largoLosa = Math.abs(losa.z2 - losa.z1);
 
                 gl.glPushMatrix();
-                    gl.glTranslatef(cx, elevacionBase - 0.5f, cz);
+                    gl.glTranslatef(cx, elevacionBase - 1.0f, cz);
                     gl.glScalef(anchoLosa, 1.0f, largoLosa);
                     glut.glutSolidCube(1.0f);
                 gl.glPopMatrix();
