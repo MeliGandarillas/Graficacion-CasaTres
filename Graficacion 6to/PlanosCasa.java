@@ -121,8 +121,7 @@ public class PlanosCasa {
         n.losas.add(new Losa(30f, 160f, 100f, 45f));    // Parte delantera derecha (sala, escaleras)
         n.losas.add(new Losa(30f, 225f, 60f, 160f));    // PARTE delantera derecha fuente
         n.losas.add(new Losa(30f, -70f, 100f, -200f));  // Franja trasera derecha del patio trasero
-        n.losas.add(new Losa(-20f, 35f, 10f, 10f)); //junto a macetas de escaleras
-
+    
         n.triangulos.add(new LosaTriangular(-100f, -200f,  100f, -200f,  100f, -250f));
         
         return n;
@@ -139,6 +138,7 @@ public class PlanosCasa {
         n.muros.add(new Muro(-20f, -200f,  -20f, -220f).aMitad());     // bodoque enmedio
         n.muros.add(new Muro(-20f, -220f,  30f, -233f).aMitad());  // Trasera diagonal
         n.muros.add(new Muro(-100f, -200f,  -20f, -200f).aMitad());    // trasera habitacion 
+        n.muros.add(new Muro(100f, -200f,  30f, -200f).aMitad()); //trasera mesa de eventos
         n.muros.add(new Muro(-100f,  225f, -100f, 35f).aMitad());  // Izquierda superior
         n.muros.add(new Muro(-100f,  10f, -100f, -200f).aMitad());  // Izquierda inferior
         
@@ -146,10 +146,34 @@ public class PlanosCasa {
         n.muros.add(new Muro(-100f,  225f,  60f,  225f).aMitad()); // Frontal derecha balcón
         n.muros.add(new Muro( 60f,  160f,  60f, 225f).aMitad()); // derecha entre senior y fuente
 
-        n.muros.add(new Muro( 100f,  160f,  100f, -145f).aMitad());  // Derecha mas larga
+        n.muros.add(new Muro( 100f,  -70f,  100f, -200f).aMitad());  // Derecha mesa de eventos
+        n.muros.add(new Muro( 100f,  160f,  100f, 80f).aMitad()); //derecha en horno y macetas
+        n.muros.add(new Muro( 100f,  80f,  100f, -70f)); //derecha en escaleras
         n.muros.add(new Muro( 60f,  160f,  100f, 160f).aMitad()); // bodoque entre derechas junto a baño SENIOR
-        
         n.muros.add(new Muro( 30f,  -200f,  30f, -233f).aMitad()); // derecha ultima junto a cuadro de mesa de eventos
+        //separaciones interiores
+        n.muros.add(new Muro(-100f,  10f, -10f,  10f).aMitad()); //superior sombrilla
+        n.muros.add(new Muro(-10f,  10f, -10f,  35f).aMitad()); //vertical sombrilla
+        n.muros.add(new Muro(-100f,  35f, -10f,  35f).aMitad()); //inferior sombrilla
+
+        n.muros.add(new Muro(-100f,  155f, -10f,  155f).aMitad()); //superior pergola
+        n.muros.add(new Muro(-10f,  155f, -10f,  145f).aMitad()); //vertical pergola
+        n.muros.add(new Muro(-100f,  145f, -10f,  145f).aMitad()); //inferior pergola
+
+        n.muros.add(new Muro(30f, -70f, 30f, 45f).aMitad()); //balcon a patio escaleras
+        n.muros.add(new Muro(30f, 80f, 100f, 80f));
+
+        /// FACHADA DE PATIO DOBLE ALTURA
+        // Se declara así: (x1, z1, altoInicio, x2, z2, altoFin)
+        n.murosTriangulares.add(new MuroTriangular(30f, -70f, 10f, 100f, -70f, 20f)); //junto a mesa de eventos
+        // Empieza tocando el suelo (0f) y termina subiendo hasta desaparecer en el techo (20f)
+        n.murosInvertidos.add(new MuroTriangularInvertido(30, 45, 10f, 100, 45, 20f));//junto a escaleras (invertido)
+        // n.losasInclinadas.add(new LosaInclinada(x1, z1, x2, z2, h1, h2, h3, h4));
+        //h1: Esquina superior izquierda (x1, z1) h2: Esquina superior derecha (x2, z1)  h3: Esquina inferior derecha (x2, z2)  h4: Esquina inferior izquierda (x1, z2)
+        n.losasInclinadas.add(new LosaInclinada(30f, -50f, 100f, -40f, 10f, 20f, 20f, 10f)); //baston 1
+        n.losasInclinadas.add(new LosaInclinada(30f, -20f, 100f, -10f, 10f, 20f, 20f, 10f)); //baston 2
+        n.losasInclinadas.add(new LosaInclinada(30f, 10f, 100f, 20f, 10f, 20f, 20f, 10f)); //baston 3
+        n.losasInclinadas.add(new LosaInclinada(30f, 45f, 100f, 80f, 20f, 20f, 20f, 20f)); //techo de escalera
         
         // SUELO TERCERA PLANTA
         // Se respetan los mismos huecos y doble altura del piso 2
@@ -161,7 +185,8 @@ public class PlanosCasa {
         n.losas.add(new Losa(30f, 225f, 60f, 160f));     // PARTE delantera derecha fuente (primera)
         n.losas.add(new Losa(30f, 160f, 100f, 80f));     // Parte delantera derecha (segunda)
         n.losas.add(new Losa(30f, -70f, 100f, -200f));   // Franja trasera derecha del patio trasero
-        
+        n.losas.add(new Losa(-10f, 35f, 10f, 10f)); //junto a macetas de escaleras
+
         n.triangulos.add(new LosaTriangular(-100f, -200f,  50f, -200f,  50f, -238f));
         
         return n;

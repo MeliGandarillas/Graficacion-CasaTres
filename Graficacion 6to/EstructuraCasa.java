@@ -97,6 +97,131 @@ public class EstructuraCasa {
                 glut.glutSolidCube(1.0f);
                 gl.glPopMatrix();
             }
+            // 4. DIBUJAR MUROS TRIANGULARES / INCLINADOS
+            gl.glColor3f(1.0f, 1.0f, 1.0f); // Color blanco para paredes
+            for (MuroTriangular mt : nivelActual.murosTriangulares) {
+                gl.glPushMatrix();
+                
+                // Nos posicionamos en el punto de origen de la pared y rotamos
+                gl.glTranslatef(mt.x1, elevacionBase, mt.z1);
+                gl.glRotatef(mt.angulo, 0, 1, 0);
+
+                float L = mt.largo;
+                float g = grosor / 2.0f; // Mitad del grosor hacia adelante y atrás
+                float h1 = mt.h1;
+                float h2 = mt.h2;
+
+                gl.glBegin(GL2.GL_QUADS);
+                    // Frente
+                    gl.glNormal3f(0, 0, 1);
+                    gl.glVertex3f(0, 0, g); gl.glVertex3f(L, 0, g); gl.glVertex3f(L, h2, g); gl.glVertex3f(0, h1, g);
+                    // Atrás
+                    gl.glNormal3f(0, 0, -1);
+                    gl.glVertex3f(0, 0, -g); gl.glVertex3f(0, h1, -g); gl.glVertex3f(L, h2, -g); gl.glVertex3f(L, 0, -g);
+                    // Abajo
+                    gl.glNormal3f(0, -1, 0);
+                    gl.glVertex3f(0, 0, g); gl.glVertex3f(0, 0, -g); gl.glVertex3f(L, 0, -g); gl.glVertex3f(L, 0, g);
+                    // Arriba (Inclinada)
+                    gl.glNormal3f(0, 1, 0); 
+                    gl.glVertex3f(0, h1, g); gl.glVertex3f(L, h2, g); gl.glVertex3f(L, h2, -g); gl.glVertex3f(0, h1, -g);
+                    // Borde izquierdo
+                    gl.glNormal3f(-1, 0, 0);
+                    gl.glVertex3f(0, 0, -g); gl.glVertex3f(0, 0, g); gl.glVertex3f(0, h1, g); gl.glVertex3f(0, h1, -g);
+                    // Borde derecho
+                    gl.glNormal3f(1, 0, 0);
+                    gl.glVertex3f(L, 0, g); gl.glVertex3f(L, 0, -g); gl.glVertex3f(L, h2, -g); gl.glVertex3f(L, h2, g);
+                gl.glEnd();
+                
+                gl.glPopMatrix();
+            }
+
+            // 5. DIBUJAR LOSAS INCLINADAS (Rampas y Techos)
+            gl.glColor3f(0.85f, 0.82f, 0.78f); // Mismo color de las losas
+            for (LosaInclinada li : nivelActual.losasInclinadas) {
+                float gro = 1.0f; // Grosor de la losa
+                
+                gl.glBegin(GL2.GL_QUADS);
+                    // Cara Superior
+                    gl.glNormal3f(0, 1, 0);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h1, li.z1);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h4, li.z2);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h3, li.z2);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h2, li.z1);
+                    
+                    // Cara Inferior
+                    gl.glNormal3f(0, -1, 0);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h1 - gro, li.z1);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h2 - gro, li.z1);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h3 - gro, li.z2);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h4 - gro, li.z2);
+
+                    // Borde Frente (z = z1)
+                    gl.glNormal3f(0, 0, -1);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h1, li.z1);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h2, li.z1);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h2 - gro, li.z1);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h1 - gro, li.z1);
+
+                    // Borde Atrás (z = z2)
+                    gl.glNormal3f(0, 0, 1);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h4, li.z2);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h4 - gro, li.z2);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h3 - gro, li.z2);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h3, li.z2);
+
+                    // Borde Izquierdo (x = x1)
+                    gl.glNormal3f(-1, 0, 0);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h1, li.z1);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h1 - gro, li.z1);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h4 - gro, li.z2);
+                    gl.glVertex3f(li.x1, elevacionBase + li.h4, li.z2);
+
+                    // Borde Derecho (x = x2)
+                    gl.glNormal3f(1, 0, 0);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h2, li.z1);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h3, li.z2);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h3 - gro, li.z2);
+                    gl.glVertex3f(li.x2, elevacionBase + li.h2 - gro, li.z1);
+                gl.glEnd();
+            }
+            // 6. DIBUJAR MUROS TRIANGULARES INVERTIDOS
+            gl.glColor3f(1.0f, 1.0f, 1.0f); // Color blanco para paredes
+            for (MuroTriangularInvertido mi : nivelActual.murosInvertidos) {
+                gl.glPushMatrix();
+                
+                gl.glTranslatef(mi.x1, elevacionBase, mi.z1);
+                gl.glRotatef(mi.angulo, 0, 1, 0);
+
+                float L = mi.largo;
+                float g = grosor / 2.0f;
+                float h1 = mi.h1; // Límite inferior 1
+                float h2 = mi.h2; // Límite inferior 2
+                float techo = alto; // La parte superior siempre toca el techo
+
+                gl.glBegin(GL2.GL_QUADS);
+                    // Frente
+                    gl.glNormal3f(0, 0, 1);
+                    gl.glVertex3f(0, h1, g); gl.glVertex3f(L, h2, g); gl.glVertex3f(L, techo, g); gl.glVertex3f(0, techo, g);
+                    // Atrás
+                    gl.glNormal3f(0, 0, -1);
+                    gl.glVertex3f(0, h1, -g); gl.glVertex3f(0, techo, -g); gl.glVertex3f(L, techo, -g); gl.glVertex3f(L, h2, -g);
+                    // Arriba (Plana contra el techo)
+                    gl.glNormal3f(0, 1, 0);
+                    gl.glVertex3f(0, techo, g); gl.glVertex3f(L, techo, g); gl.glVertex3f(L, techo, -g); gl.glVertex3f(0, techo, -g);
+                    // Abajo (Inclinada)
+                    gl.glNormal3f(0, -1, 0);
+                    gl.glVertex3f(0, h1, g); gl.glVertex3f(0, h1, -g); gl.glVertex3f(L, h2, -g); gl.glVertex3f(L, h2, g);
+                    // Borde Izquierdo
+                    gl.glNormal3f(-1, 0, 0);
+                    gl.glVertex3f(0, h1, -g); gl.glVertex3f(0, h1, g); gl.glVertex3f(0, techo, g); gl.glVertex3f(0, techo, -g);
+                    // Borde Derecho
+                    gl.glNormal3f(1, 0, 0);
+                    gl.glVertex3f(L, h2, g); gl.glVertex3f(L, h2, -g); gl.glVertex3f(L, techo, -g); gl.glVertex3f(L, techo, g);
+                gl.glEnd();
+                
+                gl.glPopMatrix();
+            }
+            
         }
         
         // DIBUJAR MUEBLES AL FINAL
