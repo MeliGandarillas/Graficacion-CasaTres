@@ -120,8 +120,9 @@ public class PlanosCasa {
         n.losas.add(new Losa(10f, 225f, 30f, -200f)); // Franja central del pasillo
         n.losas.add(new Losa(30f, 160f, 100f, 45f));    // Parte delantera derecha (sala, escaleras)
         n.losas.add(new Losa(30f, 225f, 60f, 160f));    // PARTE delantera derecha fuente
-        n.losas.add(new Losa(30f, -70f, 100f, -250f));  // Franja trasera derecha del patio trasero
-        
+        n.losas.add(new Losa(30f, -70f, 100f, -200f));  // Franja trasera derecha del patio trasero
+        n.losas.add(new Losa(-20f, 35f, 10f, 10f)); //junto a macetas de escaleras
+
         n.triangulos.add(new LosaTriangular(-100f, -200f,  100f, -200f,  100f, -250f));
         
         return n;
