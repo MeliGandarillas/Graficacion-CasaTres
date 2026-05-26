@@ -14,9 +14,10 @@ public class CasaRenderer implements GLEventListener {
 
     public boolean modoJugador = false;
     public float lookY = 0.0f;
+    public boolean verColisiones = false; // <-- NUEVA VARIABLE
 
-    public final CamaraJugador  jugador = new CamaraJugador(25.0f);
-    private final EstructuraCasa casa   = new EstructuraCasa(200.0f, 500.0f, 20.0f, 1.5f);
+    public final CamaraJugador  jugador = new CamaraJugador(26.0f);
+    private final EstructuraCasa casa   = new EstructuraCasa(200.0f, 500.0f,26.0f, 1.5f);
 
     public final Set<Integer> teclasPresionadas = new HashSet<>();
     private final List<ColisionObjeto> objetosColision = new ArrayList<>();
@@ -57,8 +58,11 @@ public class CasaRenderer implements GLEventListener {
     }
 
     private boolean hayColisionTotal(float x, float z) {
-        float radioJugador = 5.0f;
-        if (casa.hayColisionConMuros(x, z, jugador.pisoActual, radioJugador)) {
+        float radioJugador = 3.0f;
+        float piesY = jugador.y - 8.0f; 
+        
+        // 2. Le pasamos piesY al motor
+        if (casa.hayColisionConMuros(x, z, jugador.pisoActual, radioJugador, piesY)) {
             return true;
         }
         for (ColisionObjeto obj : objetosColision) {
@@ -87,11 +91,87 @@ public class CasaRenderer implements GLEventListener {
         if (teclasPresionadas.contains(KeyEvent.VK_D)) {
             movX += Math.cos(rad) * velocidad; movZ += Math.sin(rad) * velocidad;
         }
+        
 
+        // Movimiento básico X, Z...
         if (!hayColisionTotal(jugador.x + movX, jugador.z)) jugador.x += movX;
         if (!hayColisionTotal(jugador.x, jugador.z + movZ)) jugador.z += movZ;
         
+        // --- CANDADO DEL ELEVADOR MANUAL (Mantenemos tu Q/E seguras) ---
+        if (Math.abs(jugador.y - jugador.targetY) > 0.1f) {
+            jugador.actualizarAltura(); 
+            return; 
+        }
+
+        // --- TU NUEVA LÓGICA DE ESCALERAS BASADA EN ALTURAS ---
+        
+        // Calculamos la altura exacta donde están pisando tus zapatos
+        float piesY = jugador.y - 8.0f; 
+        
+        // Le pasamos piesY al buscador para que no confunda los pisos
+        float alturaEscalon = casa.obtenerAlturaEnCualquierEscalera(jugador.x, jugador.z, piesY);
+
+        if (alturaEscalon != -1.0f) {
+            jugador.targetY = alturaEscalon + 8.0f;
+            jugador.y = jugador.targetY;
+        } else {
+            // NO estamos tocando una escalera. 
+            // Evaluamos la altura física actual sin los 8.0f de la cámara
+            float alturaSueloReal = jugador.y - 8.0f;
+            
+            // Dividimos entre la altura de tu nivel (26) y redondeamos para saber el piso más cercano
+            int pisoMasCercano = Math.round(alturaSueloReal / 26.0f);
+
+            // Aseguramos que el piso exista en tu casa (0, 1 o 2 para tres plantas)
+            if (pisoMasCercano < 0) pisoMasCercano = 0;
+            if (pisoMasCercano > 2) pisoMasCercano = 2; // Si agregas un 4to piso, cambia este 2 a 3
+
+            // Anclamos al piso correcto
+            if (jugador.pisoActual != pisoMasCercano) {
+                jugador.pisoActual = pisoMasCercano;
+            }
+            jugador.targetY = (pisoMasCercano * 26.0f) + 8.0f;
+            jugador.y = jugador.targetY; 
+        }
+
         jugador.actualizarAltura();
+    }
+
+    private void dibujarCajasColision(GL2 gl, GLUT glut) {
+        // Apagamos las luces un momento para que el color rojo brille puro
+        gl.glDisable(GL2.GL_LIGHTING); 
+        
+        // Cambiamos el modo de dibujo de "Sólido" a "Alambre" (Líneas transparentes)
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE); 
+        gl.glLineWidth(2.0f); // Hacemos la línea un poco más gruesa
+
+        // Dibujamos las zonas de las Escaleras en Rojo
+        gl.glColor3f(1.0f, 0.0f, 0.0f); 
+
+        for (Nivel nivel : casa.niveles) {
+            for (EscaleraU esc : nivel.escalerasU) {
+                // Calculamos las medidas de la caja que declaraste matemáticamente
+                float anchoX = esc.xMax - esc.xMin;
+                float largoZ = esc.zMax - esc.zMin;
+                float altoY = esc.alturaFinal - esc.alturaInicial;
+                
+                // Calculamos el centro de la caja para posicionarla
+                float centroX = esc.xMin + (anchoX / 2.0f);
+                float centroZ = esc.zMin + (largoZ / 2.0f);
+                float centroY = esc.alturaInicial + (altoY / 2.0f);
+
+                gl.glPushMatrix();
+                gl.glTranslatef(centroX, centroY, centroZ);
+                gl.glScalef(anchoX, altoY, largoZ);
+                glut.glutWireCube(1.0f); // Dibuja el cubo transparente
+                gl.glPopMatrix();
+            }
+        }
+
+        // Regresamos todo a la normalidad para que tu casa se dibuje bien
+        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        gl.glEnable(GL2.GL_LIGHTING);
+        gl.glLineWidth(1.0f);
     }
 
     @Override
@@ -122,6 +202,8 @@ public class CasaRenderer implements GLEventListener {
         }
 
         casa.dibujar(gl, glut, jugador.pisoActual);
+
+        if (verColisiones) dibujarCajasColision(gl, glut);
 
         if (!modoJugador) dibujarJugador(gl, glut);
     }

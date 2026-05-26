@@ -6,7 +6,7 @@ import java.util.List;
 public class EstructuraCasa {
 
     private final float ancho, largo, alto, grosor;
-    private final List<Nivel> niveles = new ArrayList<>();
+    public final List<Nivel> niveles = new ArrayList<>();
     
     // Conectamos la nueva clase de muebles
     private final Muebles muebles = new Muebles();
@@ -23,16 +23,40 @@ public class EstructuraCasa {
         niveles.add(PlanosCasa.construirTerceraPlanta());
     }
     
-    public boolean hayColisionConMuros(float x, float z, int pisoActual, float radioJugador) {
+    // Agregamos piesY en la definición del método
+    public boolean hayColisionConMuros(float x, float z, int pisoActual, float radioJugador, float piesY) {
         if (pisoActual < 0 || pisoActual >= niveles.size()) return false;
 
+        Nivel nivel = niveles.get(pisoActual); 
         float margenMuro = radioJugador + (grosor / 2.0f);
-        for (Muro muro : niveles.get(pisoActual).muros) {
-            if (muro.distanciaAlJugador(x, z) <= margenMuro) {
-                return true;
+        
+        for (Muro muro : nivel.muros) {
+            if (muro.distanciaAlJugador(x, z) <= margenMuro) return true;
+        }
+        
+        for (MuroTriangular mt : nivel.murosTriangulares) {
+            // Le pasamos piesY y el pisoActual
+            if (mt.colisiona(x, z, radioJugador, piesY, pisoActual)) return true;
+        }
+        
+        for (MuroTriangularInvertido mti : nivel.murosInvertidos) {
+            // Le pasamos piesY y el pisoActual
+            if (mti.colisiona(x, z, radioJugador, piesY, pisoActual)) return true;
+        }
+        
+        return false;
+    }
+    
+// Agregamos el parámetro piesY aquí también
+    public float obtenerAlturaEnCualquierEscalera(float x, float z, float piesY) {
+        for (Nivel nivel : niveles) {
+            for (EscaleraU esc : nivel.escalerasU) {
+                // Pasamos piesY al método
+                float altura = esc.obtenerAltura(x, z, piesY);
+                if (altura != -1.0f) return altura;
             }
         }
-        return false;
+        return -1.0f;
     }
 
     public void dibujar(GL2 gl, GLUT glut, int pisoVisible) {
@@ -219,6 +243,31 @@ public class EstructuraCasa {
                     gl.glVertex3f(L, h2, g); gl.glVertex3f(L, h2, -g); gl.glVertex3f(L, techo, -g); gl.glVertex3f(L, techo, g);
                 gl.glEnd();
                 
+                gl.glPopMatrix();
+            }
+            // 7. DIBUJAR ESCALERAS
+            gl.glColor3f(0.2f, 0.2f, 0.2f); // Color gris oscuro/negro para los escalones (como en tu imagen)
+            for (TramoEscalera esc : nivelActual.escaleras) {
+                gl.glPushMatrix();
+                
+                // Nos posicionamos en el punto de inicio de la escalera y rotamos
+                gl.glTranslatef(esc.x, elevacionBase, esc.z);
+                gl.glRotatef(esc.angulo, 0, 1, 0);
+
+                // Dibujamos escalón por escalón
+                for (int j = 0; j < esc.escalones; j++) {
+                    gl.glPushMatrix();
+                    
+                    // Calculamos cuánto avanza hacia el frente (-Z) y cuánto sube (Y)
+                    float avanceZ = -(j * esc.huella) - (esc.huella / 2.0f);
+                    float subeY = esc.alturaInicio + (j * esc.peralte) + (esc.peralte / 2.0f);
+
+                    gl.glTranslatef(0, subeY, avanceZ);
+                    gl.glScalef(esc.ancho, esc.peralte, esc.huella);
+                    glut.glutSolidCube(1.0f);
+                    
+                    gl.glPopMatrix();
+                }
                 gl.glPopMatrix();
             }
             

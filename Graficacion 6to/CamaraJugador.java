@@ -3,7 +3,7 @@ public class CamaraJugador {
     public float z      = 230.0f;
     public float angulo = 0.0f;
     public float y      = 8.0f;
-    private float targetY    = 8.0f;
+    public float targetY    = 8.0f;
     public  int   pisoActual = 0;
 
     private final float ALTURA_PISO;

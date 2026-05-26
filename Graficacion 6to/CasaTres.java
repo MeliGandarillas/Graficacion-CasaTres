@@ -31,17 +31,32 @@ public class CasaTres extends JFrame {
         glPanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                renderer.teclasPresionadas.add(e.getKeyCode());
-
-                if (e.getKeyCode() == KeyEvent.VK_E) renderer.jugador.subirPiso();
-                if (e.getKeyCode() == KeyEvent.VK_Q) renderer.jugador.bajarPiso();
-                if (e.getKeyCode() == KeyEvent.VK_P) {
+                int tecla = e.getKeyCode();
+                
+                // ELEVADOR: Solo funciona si la tecla NO estaba presionada antes
+                if (tecla == KeyEvent.VK_E && !renderer.teclasPresionadas.contains(tecla)) {
+                    renderer.jugador.subirPiso();
+                }
+                if (tecla == KeyEvent.VK_Q && !renderer.teclasPresionadas.contains(tecla)) {
+                    renderer.jugador.bajarPiso();
+                }
+                // VISUALIZADOR DE COLISIONES
+                if (tecla == KeyEvent.VK_V && !renderer.teclasPresionadas.contains(tecla)) {
+                    renderer.verColisiones = !renderer.verColisiones;
+                }
+                
+                // MODO JUGADOR / CÁMARA LIBRE
+                if (tecla == KeyEvent.VK_P && !renderer.teclasPresionadas.contains(tecla)) {
                     renderer.modoJugador = !renderer.modoJugador;
                 }
+
+                // Guardamos la tecla para movimiento (W, A, S, D) y para bloquear repetición
+                renderer.teclasPresionadas.add(tecla);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
+                // Liberamos la tecla para que pueda volver a usarse
                 renderer.teclasPresionadas.remove(e.getKeyCode());
             }
         });

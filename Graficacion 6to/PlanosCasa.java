@@ -4,6 +4,20 @@ public class PlanosCasa {
 
     public static Nivel construirPlantaBaja() {
         Nivel n = new Nivel();
+
+        float altoPiso       = 26.0f;
+        float mitadAlto      = altoPiso / 2.0f;  // 13.0f
+        float peralteEscalon = mitadAlto / 10f;  // 1.3f
+        float huellaEscalon  = 3.0f;
+
+        // 1. LA FÍSICA (Rampa invisible absoluta: Sube de 0 a 26)
+        n.escalerasU.add(new EscaleraU(30f, 100f, 10f, 80f, 65f, 0f, 26f));
+
+        // 2. LO VISUAL (Cubos grises)
+        n.escaleras.add(new TramoEscalera(30f, 28f, 0f, 35f, huellaEscalon, peralteEscalon, 10, -90f));
+        n.losasInclinadas.add(new LosaInclinada(60f, 80f, 100f, 10f, mitadAlto, mitadAlto, mitadAlto, mitadAlto));
+        n.escaleras.add(new TramoEscalera(60f, 63f, mitadAlto, 35f, huellaEscalon, peralteEscalon, 10, 90f));
+        n.murosTriangulares.add(new MuroTriangular(100f, 45f, 0f, 30f, 45f, 26f));
         
         // ==========================================
         // PLANTA BAJA
@@ -39,9 +53,6 @@ public class PlanosCasa {
         n.muros.add(new Muro(-100f, -200f, -20f, -200f)); // pared superior junto a patio
         // SALA DE ESTAR
         n.muros.add(new Muro(30f,  80f, 100f,  80f)); // pared inferior
-        // ESCALERAS Y BAÑO
-        n.muros.add(new Muro(30f,  45f, 100f,  45f));
-        n.muros.add(new Muro(30f,  10f, 100f,  10f));
         // GYM
         n.muros.add(new Muro(30f,  -70f, 40f,  -70f)); // pared inferior izq junto a fuente doble altura
         n.muros.add(new Muro(70f,  -70f, 100f,  -70f)); // pared inferior der junto a fuente doble altura
@@ -56,6 +67,21 @@ public class PlanosCasa {
 
     public static Nivel construirSegundaPlanta() {
         Nivel n = new Nivel();
+
+        // ==========================================
+        // VARIABLES DE ESCALERA 
+        // ==========================================
+        float altoPiso       = 26.0f;
+        float mitadAlto      = altoPiso / 2.0f;  // 13.0f
+        float peralteEscalon = mitadAlto / 10f;  // 1.3f
+        float huellaEscalon  = 3.0f;
+        // 1. LA FÍSICA (Sube del piso 2 al 3: ABSOLUTO de 26 a 52)
+        n.escalerasU.add(new EscaleraU(32f, 100f, 10f, 80f, 65f, 28f, 50f));
+
+        // 2. LO VISUAL (Como es local de la Segunda Planta, se dibuja de 0 a 26)
+        n.escaleras.add(new TramoEscalera(30f, 28f, 0f, 35f, huellaEscalon, peralteEscalon, 10, -90f));
+        n.losasInclinadas.add(new LosaInclinada(60f, 80f, 100f, 10f, mitadAlto, mitadAlto, mitadAlto, mitadAlto));
+        n.escaleras.add(new TramoEscalera(60f, 63f, mitadAlto, 35f, huellaEscalon, peralteEscalon, 10, 90f));
         
         // ==========================================
         // SEGUNDA PLANTA
@@ -118,12 +144,13 @@ public class PlanosCasa {
         // SUELOS SEGUNDA PLANTA
         n.losas.add(new Losa(-100f, 250f, 10f, -200f));  // Toda la mitad izquierda de la casa de lado a lado
         n.losas.add(new Losa(10f, 225f, 30f, -200f)); // Franja central del pasillo
-        n.losas.add(new Losa(30f, 160f, 100f, 45f));    // Parte delantera derecha (sala, escaleras)
+        n.losas.add(new Losa(30f, 160f, 100f, 80f));    // Parte delantera derecha (sala, escaleras)
         n.losas.add(new Losa(30f, 225f, 60f, 160f));    // PARTE delantera derecha fuente
         n.losas.add(new Losa(30f, -70f, 100f, -200f));  // Franja trasera derecha del patio trasero
     
         n.triangulos.add(new LosaTriangular(-100f, -200f,  100f, -200f,  100f, -250f));
         
+
         return n;
     }
 
@@ -160,20 +187,20 @@ public class PlanosCasa {
         n.muros.add(new Muro(-10f,  155f, -10f,  145f).aMitad()); //vertical pergola
         n.muros.add(new Muro(-100f,  145f, -10f,  145f).aMitad()); //inferior pergola
 
-        n.muros.add(new Muro(30f, -70f, 30f, 45f).aMitad()); //balcon a patio escaleras
-        n.muros.add(new Muro(30f, 80f, 100f, 80f));
+        n.muros.add(new Muro(26f, -70f, 26f, 45f).aMitad()); //balcon a patio escaleras
+        n.muros.add(new Muro(26f, 80f, 100f, 80f));
 
         /// FACHADA DE PATIO DOBLE ALTURA
         // Se declara así: (x1, z1, altoInicio, x2, z2, altoFin)
-        n.murosTriangulares.add(new MuroTriangular(30f, -70f, 10f, 100f, -70f, 20f)); //junto a mesa de eventos
+        n.murosTriangulares.add(new MuroTriangular(26f, -70f, 13f, 100f, -70f, 26f)); //junto a mesa de eventos
         // Empieza tocando el suelo (0f) y termina subiendo hasta desaparecer en el techo (20f)
-        n.murosInvertidos.add(new MuroTriangularInvertido(30, 45, 10f, 100, 45, 20f));//junto a escaleras (invertido)
+        n.murosInvertidos.add(new MuroTriangularInvertido(26, 45, 13f, 100, 45, 26f));//junto a escaleras (invertido)
         // n.losasInclinadas.add(new LosaInclinada(x1, z1, x2, z2, h1, h2, h3, h4));
         //h1: Esquina superior izquierda (x1, z1) h2: Esquina superior derecha (x2, z1)  h3: Esquina inferior derecha (x2, z2)  h4: Esquina inferior izquierda (x1, z2)
-        n.losasInclinadas.add(new LosaInclinada(30f, -50f, 100f, -40f, 10f, 20f, 20f, 10f)); //baston 1
-        n.losasInclinadas.add(new LosaInclinada(30f, -20f, 100f, -10f, 10f, 20f, 20f, 10f)); //baston 2
-        n.losasInclinadas.add(new LosaInclinada(30f, 10f, 100f, 20f, 10f, 20f, 20f, 10f)); //baston 3
-        n.losasInclinadas.add(new LosaInclinada(30f, 45f, 100f, 80f, 20f, 20f, 20f, 20f)); //techo de escalera
+        n.losasInclinadas.add(new LosaInclinada(26f, -50f, 100f, -40f, 13f, 26f, 26f, 13f)); //baston 1
+        n.losasInclinadas.add(new LosaInclinada(26f, -20f, 100f, -10f, 13f, 26f, 26f, 13f)); //baston 2
+        n.losasInclinadas.add(new LosaInclinada(26f, 10f, 100f, 20f, 13f, 26f, 26f, 13f)); //baston 3
+        n.losasInclinadas.add(new LosaInclinada(26f, 45f, 100f, 80f, 26f, 26f, 26f, 26f)); //techo de escalera
         
         // SUELO TERCERA PLANTA
         // Se respetan los mismos huecos y doble altura del piso 2
@@ -181,10 +208,11 @@ public class PlanosCasa {
         n.losas.add(new Losa(-100f, 225f, 10f, 35f));  //izquierda segunda
         n.losas.add(new Losa(-100f, 10f, 10f, -200f));  //izquierda tercera
         
-        n.losas.add(new Losa(10f, 225f, 30f, -200f));    // Franja central del pasillo
-        n.losas.add(new Losa(30f, 225f, 60f, 160f));     // PARTE delantera derecha fuente (primera)
-        n.losas.add(new Losa(30f, 160f, 100f, 80f));     // Parte delantera derecha (segunda)
-        n.losas.add(new Losa(30f, -70f, 100f, -200f));   // Franja trasera derecha del patio trasero
+        n.losas.add(new Losa(10f, 80f, 30f, 45f)); //subiendo escaleras
+        n.losas.add(new Losa(10f, 45f, 27f, -70f));    // Franja central del pasillo
+        n.losas.add(new Losa(10f, 225f, 60f, 160f));     // PARTE delantera derecha fuente (primera)
+        n.losas.add(new Losa(10f, 160f, 100f, 80f));     // Parte delantera derecha (segunda)
+        n.losas.add(new Losa(10f, -70f, 100f, -200f));   // Franja trasera derecha del patio trasero
         n.losas.add(new Losa(-10f, 35f, 10f, 10f)); //junto a macetas de escaleras
 
         n.triangulos.add(new LosaTriangular(-100f, -200f,  50f, -200f,  50f, -238f));
